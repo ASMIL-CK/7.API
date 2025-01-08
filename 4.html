@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>city</th>
+                <th>designation</th>
+            </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+    </table>
+
+    <script>
+        fetch("https://zil-test.s3.us-east-1.amazonaws.com/json-data.json")
+        .then((response) => response.json())
+        .then((data) => {
+
+            // iterate over the data and create table rows 
+            data.forEach((user) => {
+
+                // create a new row 
+                const row = document.createElement("tr");
+
+                // create cells for the row 
+                const nameCell = document.createElement("td");
+                nameCell.textContent = user.name;
+                row.appendChild(nameCell);
+
+                const cityCell = document.createElement("td");
+                cityCell.textContent = user.address.city;
+                row.appendChild(cityCell);
+
+                const designationCell = document.createElement("td");
+                designationCell.textContent = user.company.designation;
+               
+
+                // check if the designation is "Angular Developer "
+                if (user.company.designation === "angular Developer") {
+                    designationCell.classList.add("angular-developer");
+                    // add a class to the cell
+                }
+                row.appendChild(designationCell);
+
+                // Append the row to the table body
+                document.getElementById("table-body").appendChild(row);
+            })
+        })
+
+        .catch((error) => console.log(error));
+    </script>
+</body>
+</html>
