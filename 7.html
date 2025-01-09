@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+    <style>
+        #loading { 
+            display: none;
+        }
+
+        #user-list{
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .user-card{
+            margin: 10px;
+            padding: 20px;
+            border: 5px solid black ;
+            background-color: antiquewhite;
+            color: brown;
+            border-radius: 10px;
+
+        }
+
+        .user-card img{
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+    </style>
+<body>
+    
+    <h1>User List</h1>
+    <input type="text" id="search" placeholder="search by first name">
+    <div id="loading">loading...</div>
+    <div id="user-list"></div>
+
+
+    <script>
+        const userList = document.getElementById('user-list');
+        const loadingDiv = document.getElementById('loading');
+        const searchInput = document.getElementById('search');
+        let allUser = [];
+
+        // function to fetch user data 
+        const fetchUsers = async () => {
+            loadingDiv.style.display = 'block';
+            userList.innerHTML ='';
+
+            try {
+                const response = await fetch ('https://randomuser.me/api/?results=10');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users');
+
+                }
+
+                const data = await response.json();
+                allUser = data.results;
+                loadingDiv.style.display = 'none';
+
+                // display USer 
+                displayUser(allUser);
+             } catch (error) {
+                loadingDiv.textContent = `Error: ${error.message}`;
+                }                    
+        };
+
+        // function to display user
+        const displayUser = (users) => {
+            users.forEach(user => {
+                const userCard = document.createElement('div');
+                userCard.classList.add('user-card');
+
+                userCard.innerHTML =`
+                <img src="${user.picture.medium}" alt="Profile Picture"
+                <h3>${user.name.first} ${user.name.last}</h3>
+                <p>Email: ${user.email}</p>
+                <p>Location: ${user.location.city}, ${user.location.state},
+                    ${user.location.country}</p>
+                 <p>Gender: ${user.gender.charAt(0).toUpperCase() + user.gender.slice(1)}</p>`;
+
+                    userList.appendChild(userCard);
+            });
+        };
+
+        // Serch functionality
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filteredUsers = allUser.filter(user =>
+                user.name.first.toLowerCase().includes(searchTerm) 
+            );
+            userList.innerHTML = '';
+            displayUser(filteredUsers);
+        });
+
+        // fetch uesrs when the page loads
+
+        fetchUsers();
+    </script>
+
+</body>
+</html>
